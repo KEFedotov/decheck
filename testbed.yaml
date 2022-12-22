@@ -1,0 +1,79 @@
+devices:
+  ISP:
+    connections:
+      cli:
+        ip: 192.168.10.38
+        port: 40074
+        protocol: ssh
+    credentials:
+      default:
+        password: root
+        username: toor
+    os: linux
+    type: linux
+  RTR-L:
+    connections:
+      cli:
+        ip: 192.168.10.38
+        port: 30012
+        protocol: telnet
+    credentials:
+      default:
+        password: network
+        username: demouser
+      enable:
+        password: wsr
+    os: iosxe
+    platform: csr1000v
+    type: iosxe
+  RTR-R:
+    connections:
+      cli:
+        ip: 192.168.10.38
+        port: 30013
+        protocol: telnet
+    credentials:
+      default:
+        password: network
+        username: demouser
+      enable:
+        password: wsr
+    os: iosxe
+    platform: csr1000v
+    type: iosxe
+  WEB-L:
+    connections:
+      cli:
+        ip: 192.168.10.38
+        port: 40075
+        protocol: ssh
+    credentials:
+      default:
+        password: root
+        username: toor
+    os: linux
+    type: linux
+  WEB-R:
+    connections:
+      cli:
+        ip: 192.168.10.38
+        port: 40076
+        protocol: ssh
+    credentials:
+      default:
+        password: root
+        username: toor
+    os: linux
+    type: linux
+  SRV:
+    connections:
+      cli:
+        ip: 192.168.10.38
+        port: 40077
+        protocol: ssh
+    credentials:
+      default:
+        password: root
+        username: toor
+    os: linux
+    type: linux
