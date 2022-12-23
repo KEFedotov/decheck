@@ -203,4 +203,84 @@ criterions:
           result:
           - '192.168.105.200'
           description: 'Correct dns config on router'
-    
+    - name: A3.17
+      description: ISP - NTP-server deployed
+      check:
+        connections:
+        - 'ISP'
+        steps:
+        - device: ISP
+          command: 'chronyc tracking'
+          result:
+          - 'Stratum:.{1,}4'
+          - 'Leap status:.{1,}Normal'
+          description: 'Stratum 4 ans status normal'
+    - name: A3.18
+      description: CLI - NTP-server used. MANUAL CHECK
+      check:
+        connections:
+        - 'CLI'
+        steps:
+        - device: CLI
+          command: 'w32tm /query /status'
+          result:
+          - 'Stratum:.{1,}5'
+          description: 'Stratum 5 ans status normal'
+    - name: A3.19
+      description: SRV - NTP-server deployed
+      check:
+        connections:
+        - 'SRV'
+        steps:
+        - device: SRV
+          command: 'chronyc tracking'
+          result:
+          - 'Stratum:.{1,}5'
+          - 'Leap status:.{1,}Normal'
+          description: 'Stratum 5 ans status normal'
+    - name: A3.20
+      description: SRV - ISP sync
+      check:
+        connections:
+        - 'SRV'
+        steps:
+        - device: SRV
+          command: 'chronyc tracking'
+          result:
+          - 'Reference ID:.{1,}4.4.4.1'
+          description: 'Reference 4.4.4.1'
+    - name: A3.21
+      description: SRV - allow sync
+      check:
+        connections:
+        - 'SRV'
+        steps:
+        - device: SRV
+          command: 'cat /etc/chrony/chrony.conf'
+          result:
+          - 'allow 192.168.105.0/24'
+          - 'allow 172.16.105.0/24'
+          description: 'Allowed sync from internal networks'
+    - name: A3.22
+      description: RTR-R - SRV sync
+      check:
+        connections:
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show ntp status'
+          result:
+          - 'stratum 6'
+          description: 'Sync with SRV, stratum 6'
+    - name: A3.23
+      description: WEB-L - NTP-server usage
+      check:
+        connections:
+        - 'WEB-L'
+        steps:
+        - device: WEB-L
+          command: 'chronyc tracking'
+          result:
+          - 'Stratum:.{1,}6'
+          - 'Leap status:.{1,}Normal'
+          description: 'Stratum 6 ans status normal'
