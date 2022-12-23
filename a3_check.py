@@ -1,7 +1,6 @@
 from genie.testbed import load
 from check_module import scheme_parse, check_out
 from pyats import aetest
-import re
 import logging
 
 logger = logging.getLogger(__name__)
@@ -9,11 +8,10 @@ logger = logging.getLogger(__name__)
 tb = load('./testbed.yaml')
 
 print()
-scheme = scheme_parse('./assessment/a1.yaml')
+scheme = scheme_parse('./assessment/a3.yaml')
 criterion = scheme['criterions'][0]
 subcriteria = criterion['subcriteria'][0]
-
-class Subcriteria_A1(aetest.Testcase):
+class Subcriteria_A2(aetest.Testcase):
         
     @aetest.test.loop(aspect=subcriteria['aspects'])
     def aspects_check(self, steps, aspect):
@@ -26,8 +24,7 @@ class Subcriteria_A1(aetest.Testcase):
                 tb.devices[item].connect(mit=True, log_stdout=False)
                 logger.info(f'Connection to {item} successed')
             except:
-                logger.critical(f'Connection to {item} failed')
-                return False
+                self.failed(f'Connection to {item} failed')
         
         with steps.start(f"+--- Aspect: {aspect['name']} - {aspect['description']}") as step:
             is_expected = True
@@ -54,7 +51,7 @@ class Subcriteria_A1(aetest.Testcase):
                 step.passed('Aspect passed')
             else:
                 step.failed('Aspect failed')
-            
-
+    
+    
 if __name__ == "__main__":
     aetest.main()

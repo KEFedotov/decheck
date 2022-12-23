@@ -7,8 +7,8 @@ devices:
         protocol: ssh
     credentials:
       default:
-        password: root
-        username: toor
+        password: toor
+        username: root
     os: linux
     type: linux
   RTR-L:
@@ -23,9 +23,9 @@ devices:
         username: demouser
       enable:
         password: wsr
-    os: iosxe
+    os: iol
     platform: csr1000v
-    type: iosxe
+    type: ios
   RTR-R:
     connections:
       cli:
@@ -38,9 +38,9 @@ devices:
         username: demouser
       enable:
         password: wsr
-    os: iosxe
+    os: iol
     platform: csr1000v
-    type: iosxe
+    type: ios
   WEB-L:
     connections:
       cli:
@@ -49,8 +49,8 @@ devices:
         protocol: ssh
     credentials:
       default:
-        password: root
-        username: toor
+        password: toor
+        username: root
     os: linux
     type: linux
   WEB-R:
@@ -61,8 +61,8 @@ devices:
         protocol: ssh
     credentials:
       default:
-        password: root
-        username: toor
+        password: toor
+        username: root
     os: linux
     type: linux
   SRV:
@@ -73,7 +73,7 @@ devices:
         protocol: ssh
     credentials:
       default:
-        password: root
-        username: toor
+        password: toor
+        username: root
     os: linux
     type: linux

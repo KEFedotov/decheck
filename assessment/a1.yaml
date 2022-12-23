@@ -7,48 +7,68 @@ criterions:
     - name: A1.O1
       description: VM SRV created
       check:
-        devices: ['SRV']
-        action:
-          commands: ['hostnamectl']
-          values:
-           - 'SRV'
+        connections:
+        - 'SRV'
+        steps:
+        - device: SRV
+          command: 'hostnamectl'
+          result: ['SRV']
+          description: 'Output must include SRV'
     - name: A1.O2
       description: VM RTR-L created
       check:
-        devices: ['RTR-L']
-        action:
-          commands: ['show running-config | include hostname']
-          values:
-           - 'RTR-L'
+        connections: 
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show running-config | include hostname'
+          result: ['RTR-L']
+          description: 'Output must include RTR-L'
     - name: A1.O3
       description: VM RTR-R created
       check:
-        devices: ['RTR-R']
-        action:
-          commands: ['show running-config | include hostname']
-          values:
-           - 'RTR-R'
+        connections: 
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show running-config | include hostname'
+          result: ['RTR-R']
+          description: 'Output must include RTR-R'
     - name: A1.O4
       description: VM SRV commutation
       check:
-        devices: ['SRV']
-        action:
-          commands: ['ip address show']
-          values:
-           - 'UP'
+        connections: 
+        - 'SRV'
+        steps:
+        - device: SRV
+          command: 'ip address show | grep 192.168.105.200/24'
+          result: ['192.168.105.200/24']
+          description: 'Output must include 192.168.105.200/24'
     - name: A1.O5
       description: VM RTR-L commutation
       check:
-        devices: ['RTR-L']
-        action:
-          commands: ['show ip interface brief']
-          values:
-           - '.{1,}up.{1,}up'
+        connections: 
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip interface brief | include Ethernet0/0'
+          result: ['192.168.105.254.{1,}up.{1,}up']
+          description: 'Output must include 192.168.105.254 ... up up'
+        - device: RTR-L
+          command: 'show ip interface brief | include Ethernet0/1'
+          result: ['4.4.4.100.{1,}up.{1,}up']
+          description: 'Output must include 4.4.4.100 ... up up'
     - name: A1.O6
       description: VM RTR-R commutation
       check:
-        devices: ['RTR-R']
-        action:
-          commands: ['show running-config | include hostname']
-          values:
-           - '.{1,}up.{1,}up'
+        connections: 
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show ip interface brief | include Ethernet0/0'
+          result: ['172.16.105.254.{1,}up.{1,}up']
+          description: 'Output must include 172.16.105.254 ... up up'
+        - device: RTR-R
+          command: 'show ip interface brief | include Ethernet0/1'
+          result: ['5.5.5.100.{1,}up.{1,}up']
+          description: 'Output must include 5.5.5.100 ... up up'

@@ -17,8 +17,8 @@ def check_out(values, output):
     for value in values:
         output = re.sub(r'\s+', ' ', output)
         value = re.sub(r'\s+', ' ', value)
-        logger.critical(f"Value must be: {value}")
-        logger.info(f"Value is: {output}")
-        if re.findall(value, output, re.MULTILINE):
+        if re.findall(value, output):
             result = True
+        else:
+            result = False
     return result

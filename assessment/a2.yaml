@@ -1,0 +1,241 @@
+---
+criterions:
+- name: A
+  subcriteria:
+  - name: A2 - Network linking
+    aspects:
+    - name: A2.O1
+      description: ISP - internal network isolated
+      check:
+        connections:
+        - 'SRV'
+        - 'ISP'
+        steps:
+        - device: SRV
+          command: 'ping 4.4.4.1 -c 5 -i 0.5 > out.txt &'
+          result: None
+        - device: ISP
+          command: 'tcpdump -c 2 -i ens4 -n icmp > /tmp/result'
+          result: None
+        - device: ISP
+          command: 'cat /tmp/result'
+          result: ['4.4.4.100']
+          description: 'Output must EXCLUDE 192.168.105.200'
+    - name: A2.O2
+      description: RTR-L - trafic translation
+      check:
+        connections:
+        - 'SRV'
+        - 'RTR-L'
+        steps:
+        - device: SRV
+          command: 'ping 4.4.4.1 -c 5 -i 0.5 > out.txt &'
+          result: None
+        - device: RTR-L
+          command: 'clear ip nat translation *'
+          result: None
+        - device: RTR-L
+          command: 'show ip nat translations'
+          result: ['4.4.4.100.{1,}192.168.105.200.{1,}4.4.4.1']
+          description: 'Output must include 4.4.4.100 ... 192.168.105.200 ... 4.4.4.1'
+    - name: A2.O3
+      description: RTR-R - trafic translation
+      check:
+        connections:
+        - 'WEB-R'
+        - 'RTR-R'
+        steps:
+        - device: WEB-R
+          command: 'ping 5.5.5.1 -c 5 -i 0.5 > out.txt &'
+          result: None
+        - device: RTR-R
+          command: 'clear ip nat translation *'
+          result: None
+        - device: RTR-R
+          command: 'show ip nat translations'
+          result: ['5.5.5.100.{1,}172.16.105.100.{1,}5.5.5.1']
+          description: 'Output must include 5.5.5.100 ... 172.16.105.100 ... 5.5.5.1'
+    - name: A2.O4
+      description: Internetwork connection
+      check:
+        connections:
+        - 'SRV'
+        steps:
+        - device: SRV
+          command: 'ping 172.16.105.100 -c 5 -i 0.2'
+          result: ['from 172.16.105.100:']
+          description: 'Output must include echo reply from 172.16.105.100'
+    - name: A2.O5
+      description: Internetwork connection protection
+      check:
+        connections:
+        - 'SRV'
+        - 'ISP'
+        steps:
+        - device: SRV
+          command: 'ping 172.16.105.100 -c 5 -i 0.5 > out.txt &'
+          result: None
+        - device: ISP
+          command: 'tcpdump -c 2 -i ens4 -n > /tmp/result'
+          result: None
+        - device: ISP
+          command: 'cat /tmp/result'
+          result: ['4.4.4.100 > 5.5.5.100: ESP']
+          description: 'Output must include packets with ESP transport protocol'
+    - name: A2.O6
+      description: Internetwork connection (internal addresses)
+      check:
+        connections:
+        - 'SRV'
+        steps:
+        - device: SRV
+          command: 'traceroute 172.16.105.100'
+          result: ['(?!4.4.4.1)']
+          description: 'Output must EXCLUDE ISP address'
+    - name: A2.O7
+      description: RTR-L - permit connect to DNS
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip access-lists'
+          result:
+          - 'permit tcp.{1,}4.4.4.100 eq.{0,}domain'
+          - 'permit udp.{1,}4.4.4.100 eq.{0,}domain'
+          description: 'Output must include permit tcp & udp rules for domain'
+    - name: A2.O8
+      description: RTR-L - permit connect to HTTP
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip access-lists'
+          result:
+          - 'permit tcp.{1,}4.4.4.100 eq.{0,}www'
+          description: 'Output must include permit tcp rule for WWW'
+    - name: A2.O9
+      description: RTR-L - permit connect to HTTPS
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip access-lists'
+          result:
+          - 'permit tcp.{1,}4.4.4.100 eq.{0,}443'
+          description: 'Output must include permit tcp rule for 443'
+    - name: A2.10
+      description: RTR-L - permit connect to SSH
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip access-lists'
+          result:
+          - 'permit tcp.{1,}4.4.4.100 eq.{0,}2222'
+          description: 'Output must include permit tcp rule for 2222'
+    - name: A2.11
+      description: RTR-L - permit ICMP proto
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip access-lists'
+          result:
+          - 'permit icmp any any'
+          description: 'Output must include permit rule for ICMP'
+    - name: A2.12
+      description: RTR-L - permit deny some any proto
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip access-lists'
+          result:
+          - 'deny ip any any'
+          description: 'Output must include deny rule for any'
+    - name: A2.13
+      description: RTR-R - permit connect to HTTP
+      check:
+        connections:
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show ip access-lists'
+          result:
+          - 'permit tcp.{1,}5.5.5.100 eq.{0,}www'
+          description: 'Output must include permit tcp rule for WWW'
+    - name: A2.14
+      description: RTR-R - permit connect to HTTPS
+      check:
+        connections:
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show ip access-lists'
+          result:
+          - 'permit tcp.{1,}5.5.5.100 eq.{0,}443'
+          description: 'Output must include permit tcp rule for 443'
+    - name: A2.15
+      description: RTR-R - permit connect to SSH
+      check:
+        connections:
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show ip access-lists'
+          result:
+          - 'permit tcp.{1,}5.5.5.100 eq.{0,}2244'
+          description: 'Output must include permit tcp rule for 2244'
+    - name: A2.16
+      description: RTR-R - permit connect to SSH
+      check:
+        connections:
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show ip access-lists'
+          result:
+          - 'deny ip any any'
+          description: 'Output must include deny rule for any'
+    - name: A2.17
+      description: RTR-L - DNS port translations
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip nat translations'
+          result:
+          - 'tcp 4.4.4.100:53.{1,}192.168.105.200:53'
+          - 'udp 4.4.4.100:53.{1,}192.168.105.200:53'
+          description: 'Output must include tcp & udp translation record for port 53'
+    - name: A2.18
+      description: RTR-L - SSH port translation
+      check:
+        connections:
+        - 'RTR-L'
+        steps:
+        - device: RTR-L
+          command: 'show ip nat translations'
+          result:
+          - 'tcp 4.4.4.100:2222.{1,}192.168.105.100:22'
+          description: 'Output must include tcp translation record from port 2222 to port 22'
+    - name: A2.19
+      description: RTR-R - SSH port translation
+      check:
+        connections:
+        - 'RTR-R'
+        steps:
+        - device: RTR-R
+          command: 'show ip nat translations'
+          result:
+          - 'tcp 5.5.5.100:2244.{1,}172.16.105.100:22'
+          description: 'Output must include tcp translation record from port 2244 to port 22'
+
+    
